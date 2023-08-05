@@ -1,3 +1,5 @@
+import shutil
+
 import pytesseract
 from fastapi import FastAPI, UploadFile
 from PIL import Image
@@ -12,6 +14,9 @@ async def root():
 
 @app.post('/image')
 async def upload_image(image: UploadFile):
-    text = pytesseract.image_to_string(image, lang='rus')
+    with open("bill.jpg", "wb") as buffer:
+        shutil.copyfileobj(image.file, buffer)
+    pil_image = Image.open('bill.jpg')
+    text = pytesseract.image_to_string(pil_image, lang='rus')
     print(text)
     return {'text': text}
